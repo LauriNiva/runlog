@@ -1,2 +1,5 @@
 secrets.json
 .env
+apitests/.env
+apitests/secrets.json
+apitests/node_modules
