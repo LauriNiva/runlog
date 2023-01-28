@@ -1,10 +1,69 @@
-import Head from 'next/head'
-import { Inter } from '@next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from 'next/head';
+import styles from '@/styles/Home.module.css';
+import styled from 'styled-components';
+import { google } from 'googleapis';
 
-const inter = Inter({ subsets: ['latin'] })
+import { Runner } from './Runner';
 
-export default function Home() {
+const CalendarStyles = styled.div`
+  display: flex;
+  flex-flow: wrap-reverse;
+  gap: 2px;
+  max-width: 800px;
+`;
+
+const DayStyles = styled.div`
+  width: calc(100% / 7 - 2px);
+  /* padding-top: calc(100% / 7 - 2px); */
+  /* height: 100%; */
+  margin: 0;
+  border: 2px solid;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover p {
+    color: powderblue;
+  }
+  p {
+    text-align: center;
+    padding-top: 55px;
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: black;
+  }
+`;
+
+const StatsStyles = styled.div`
+  padding: 30px;
+  p {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: larger;
+    color: aliceblue;
+  }
+`;
+
+const InfoButtonStyles = styled.div`
+  position: sticky;
+  align-self: flex-end;
+  top: 15px;
+  right: 15px;
+  z-index: 50;
+  button {
+    padding: 10px;
+    background-color: black;
+    border: solid 2px white;
+    border-radius: 5px;
+    color: white;
+    font-size: large;
+    cursor: pointer;
+  }
+`;
+
+export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }) {
   return (
     <>
       <Head>
@@ -14,10 +73,91 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-       <div>
-        
-       </div>
+        <InfoButtonStyles>
+          <a href="#bottomArea">
+            <button>?</button>
+          </a>
+        </InfoButtonStyles>
+
+        <CalendarStyles style={{}}>
+          {arrayOfDaysWithRuns?.map(([date, run], index) => (
+            <DayStyles
+              key={`calendar-${index}`}
+              style={{
+                borderColor: `${run ? 'royalblue' : 'tomato'}`,
+              }}
+            >
+              {run ? (
+                <Runner>
+                  <p>{date}</p>
+                </Runner>
+              ) : (
+                <p>{date}</p>
+              )}
+            </DayStyles>
+          ))}
+        </CalendarStyles>
+        <StatsStyles>
+          <p id="bottomArea">{`${daysRun} / ${totalDays} ( ${Math.floor(
+            (daysRun / totalDays) * 100
+          )}% )`}</p>
+        </StatsStyles>
       </main>
     </>
-  )
+  );
+}
+
+export async function getServerSideProps() {
+  function getDaysArray() {
+    const arr = [];
+
+    for (
+      const date = new Date('5, 16, 2022');
+      date <= new Date();
+      date.setDate(date.getDate() + 1)
+    ) {
+      arr.push(new Date(date));
+    }
+    return arr;
+  }
+
+  const daysArray = getDaysArray();
+
+  const auth = await google.auth.getClient({
+    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
+  });
+
+  const sheets = google.sheets({ version: 'v4', auth });
+
+  const range = `Running!A2:A${daysArray.length}`;
+
+  const response = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range,
+  });
+
+  // Poistetaan useammat merkinnät samalta päivältä. Reverse, koska data tulee uusin ensin ja tarvitaan vanhin ensin
+  const arrayOfUniqueRuns = [
+    ...new Set(response?.data?.values.reverse().map((arr) => arr[0])),
+  ];
+
+  // Muunnetaan tekstimuotoiset päivämäärät Date objekteiksi
+  const arrayOfRunDates = arrayOfUniqueRuns.map((value) => new Date(value));
+
+  console.log(`${arrayOfRunDates.length} / ${daysArray.length}`);
+
+  let runIterator = 0;
+  const arrayOfDaysWithRuns = daysArray.map((date) => {
+    if (date.getTime() === arrayOfRunDates[runIterator].getTime()) {
+      runIterator++;
+    }
+    return [
+      date.toLocaleDateString('fi-FI'),
+      date.getTime() === arrayOfRunDates[runIterator - 1].getTime(),
+    ];
+  });
+
+  const totalDays = arrayOfDaysWithRuns.length;
+  const daysRun = arrayOfRunDates.length;
+  return { props: { arrayOfDaysWithRuns, totalDays, daysRun } };
 }

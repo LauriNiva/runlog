@@ -3,3 +3,5 @@ secrets.json
 apitests/.env
 apitests/secrets.json
 apitests/node_modules
+runlog/secrets.json
+runlog/.env.local
