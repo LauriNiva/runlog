@@ -153,30 +153,34 @@ export async function getServerSideProps() {
   });
 
     // Poistetaan useammat merkinnät samalta päivältä. Reverse, koska data tulee uusin ensin ja tarvitaan vanhin ensin
-    const arrayOfUniqueRuns = [
-      ...Array.from(
-        new Set(response?.data?.values.reverse().map((arr) => arr[0]))
-      ),
-    ];
+    if (response?.data?.values){
 
-  // Muunnetaan tekstimuotoiset päivämäärät Date objekteiksi
-  const arrayOfRunDates = arrayOfUniqueRuns.map((value) => new Date(value));
-
-  console.log(`${arrayOfRunDates.length} / ${daysArray.length}`);
-
-  let runIterator = 0;
-  const arrayOfDaysWithRuns = daysArray.map((date) => {
-    if (date.getTime() === arrayOfRunDates[runIterator].getTime()) {
-      runIterator++;
-    }
-    return [
-      date.toLocaleDateString('fi-FI', { day: '2-digit', month: '2-digit' }),
-      date.toLocaleDateString('fi-FI', { year: 'numeric' }),
-      date.getTime() === arrayOfRunDates[runIterator - 1].getTime(),
-    ];
-  });
-
-  const totalDays = arrayOfDaysWithRuns.length;
-  const daysRun = arrayOfRunDates.length;
-  return { props: { arrayOfDaysWithRuns, totalDays, daysRun } };
+      const arrayOfUniqueRuns = [
+        ...Array.from(
+          new Set(response?.data?.values.reverse().map((arr) => arr[0]))
+          ),
+        ];
+        
+        // Muunnetaan tekstimuotoiset päivämäärät Date objekteiksi
+        const arrayOfRunDates = arrayOfUniqueRuns.map((value) => new Date(value));
+        
+        console.log(`${arrayOfRunDates.length} / ${daysArray.length}`);
+        
+        let runIterator = 0;
+        const arrayOfDaysWithRuns = daysArray.map((date) => {
+          if (date.getTime() === arrayOfRunDates[runIterator].getTime()) {
+            runIterator++;
+          }
+          return [
+            date.toLocaleDateString('fi-FI', { day: '2-digit', month: '2-digit' }),
+            date.toLocaleDateString('fi-FI', { year: 'numeric' }),
+            date.getTime() === arrayOfRunDates[runIterator - 1].getTime(),
+          ];
+        });
+        
+        const totalDays = arrayOfDaysWithRuns.length;
+        const daysRun = arrayOfRunDates.length;
+        return { props: { arrayOfDaysWithRuns, totalDays, daysRun } };
+      }
+      return { props: { arrayOfDaysWithRuns : 0, totalDays : 0, daysRun : 0} };
 }
