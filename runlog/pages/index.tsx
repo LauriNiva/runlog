@@ -123,7 +123,7 @@ export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }:any) {
           ))}
         </CalendarStyles>
         <StatsStyles id="bottomArea">
-          <p>Nettisivu näyttää toteutuneet päivittäiset juoksulenkit suoraan Ajuoksukellosta synkronoituna.</p>
+          <p>Nettisivu näyttää toteutuneet päivittäiset juoksulenkit suoraan juoksukellosta synkronoituna.</p>
           <p>Päivittäisten aamulenkkien projekti alkanut 16.5.2022.</p>
           <p>Toteutuneet lenkit: {`${daysRun} / ${totalDays} ( ${Math.floor(
             (daysRun / totalDays) * 100
