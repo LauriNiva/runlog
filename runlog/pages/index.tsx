@@ -139,13 +139,17 @@ export async function getServerSideProps() {
 
   const daysArray = getDaysArray();
 
-  console.log('beep', daysArray);
+
+  const { private_key } = JSON.parse(process.env.GOOGLE_PRIVATE_KEY!);
 
   const auth = await google.auth.getClient({
+    credentials: {
+      private_key: private_key,
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+    },
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
   });
 
-  console.log('boop')
 
   const sheets = google.sheets({ version: 'v4', auth });
 
