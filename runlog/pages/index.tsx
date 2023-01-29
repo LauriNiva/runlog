@@ -139,9 +139,13 @@ export async function getServerSideProps() {
 
   const daysArray = getDaysArray();
 
+  console.log('beep', daysArray);
+
   const auth = await google.auth.getClient({
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
   });
+
+  console.log('boop')
 
   const sheets = google.sheets({ version: 'v4', auth });
 
