@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export function Runner({children}) {
+export default function Runner({children}) {
     return (
         <RunnerStyles>
           <div className="running-button">

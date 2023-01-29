@@ -3,7 +3,7 @@ import styles from '@/styles/Home.module.css';
 import styled from 'styled-components';
 import { google } from 'googleapis';
 
-import { Runner } from './Runner';
+import Runner from './Runner';
 
 const CalendarStyles = styled.div`
   display: flex;
