@@ -107,17 +107,11 @@ export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }:any) {
               }}
             >
               <div className="emptydiv">
-                {run ? (
-                  <Runner>
+                {
+                  <Runner run={run}>
                     <p>{date}</p>
                     <p>{year}</p>
-                  </Runner>
-                ) : (
-                  <>
-                    <p>{date}</p>
-                    <p>{year}</p>
-                  </>
-                )}
+                  </Runner>}
               </div>
             </DayStyles>
           ))}

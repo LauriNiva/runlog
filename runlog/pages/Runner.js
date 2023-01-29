@@ -1,23 +1,25 @@
 import styled from 'styled-components';
 
-export default function Runner({children}) {
-    return (
-        <RunnerStyles>
-          <div className="running-button">
-            <div className="text">{children}</div>
-            <div className="running">
-              <div className="outer">
-                <div className="body">
-                  <div className="arm behind"></div>
-                  <div className="arm front"></div>
-                  <div className="leg behind"></div>
-                  <div className="leg front"></div>
-                </div>
-              </div>
+export default function Runner({ children, run }) {
+  return (
+    <RunnerStyles>
+      <div className="running-button">
+        <div className="text">{children}</div>
+        <div className="running">
+          {run &&
+          <div className="outer">
+            <div className="body">
+              <div className="arm behind"></div>
+              <div className="arm front"></div>
+              <div className="leg behind"></div>
+              <div className="leg front"></div>
             </div>
           </div>
-        </RunnerStyles>
-    )
+          }
+        </div>
+      </div>
+    </RunnerStyles>
+  );
 }
 
 
