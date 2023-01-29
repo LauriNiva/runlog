@@ -14,25 +14,34 @@ const CalendarStyles = styled.div`
 
 const DayStyles = styled.div`
   width: calc(100% / 7 - 2px);
-  /* padding-top: calc(100% / 7 - 2px); */
-  /* height: 100%; */
+  padding-top: calc(100% / 7 - 2px);
+  position: relative;
   margin: 0;
   border: 2px solid;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  overflow: hidden;
+  .emptydiv {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
   &:hover p {
-    color: powderblue;
+    /* color: powderblue; */
+    display: block;
   }
   p {
-    text-align: center;
-    padding-top: 55px;
-
+    display: none;
+    user-select: none;
+    /* transition: color 0.1s ease-in; */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
       Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    color: black;
+    /* color: black; */
+    color: powderblue;
   }
 `;
 
@@ -47,12 +56,12 @@ const StatsStyles = styled.div`
 `;
 
 const InfoButtonStyles = styled.div`
-  position: sticky;
   align-self: flex-end;
-  top: 15px;
-  right: 15px;
   z-index: 50;
   button {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
     padding: 10px;
     background-color: black;
     border: solid 2px white;
@@ -80,20 +89,26 @@ export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }) {
         </InfoButtonStyles>
 
         <CalendarStyles style={{}}>
-          {arrayOfDaysWithRuns?.map(([date, run], index) => (
+          {arrayOfDaysWithRuns?.map(([date, year, run], index) => (
             <DayStyles
               key={`calendar-${index}`}
               style={{
                 borderColor: `${run ? 'royalblue' : 'tomato'}`,
               }}
             >
-              {run ? (
-                <Runner>
-                  <p>{date}</p>
-                </Runner>
-              ) : (
-                <p>{date}</p>
-              )}
+              <div className="emptydiv">
+                {run ? (
+                  <Runner>
+                    <p>{date}</p>
+                    <p>{year}</p>
+                  </Runner>
+                ) : (
+                  <>
+                    <p>{date}</p>
+                    <p>{year}</p>
+                  </>
+                )}
+              </div>
             </DayStyles>
           ))}
         </CalendarStyles>
@@ -152,7 +167,8 @@ export async function getServerSideProps() {
       runIterator++;
     }
     return [
-      date.toLocaleDateString('fi-FI'),
+      date.toLocaleDateString('fi-FI', { day: '2-digit', month: '2-digit' }),
+      date.toLocaleDateString('fi-FI', { year: 'numeric' }),
       date.getTime() === arrayOfRunDates[runIterator - 1].getTime(),
     ];
   });

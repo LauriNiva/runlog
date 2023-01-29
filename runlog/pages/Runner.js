@@ -3,8 +3,8 @@ import styled from 'styled-components';
 export function Runner({children}) {
     return (
         <RunnerStyles>
-          <button className="running-button">
-            <span className="default">{children}</span>
+          <div className="running-button">
+            <div className="text">{children}</div>
             <div className="running">
               <div className="outer">
                 <div className="body">
@@ -15,13 +15,15 @@ export function Runner({children}) {
                 </div>
               </div>
             </div>
-          </button>
+          </div>
         </RunnerStyles>
     )
 }
 
 
 const RunnerStyles = styled.div`
+  height: 100%;
+  width: 100%;
   .running {
     --duration: 0.8s;
     transform: scale(var(--scale, 1));
@@ -126,40 +128,32 @@ const RunnerStyles = styled.div`
   }
 
   .running-button {
-    --padding-y: 12px;
-    --padding-x: 36px;
+    height: 100%;
+    width: 100%;
     margin: 0;
-    padding: var(--padding-y) 0;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 23px;
+    padding: 0;
     position: relative;
-    border: none;
-    overflow: hidden;
-    outline: none;
-    -webkit-appearance: none;
-    background: var(--b, var(--background));
-    span {
-      display: block;
-      transition: transform 0.4s ease;
-      transform: translateX(var(--x, 0));
-      padding: 0 var(--padding-x);
-      &.default {
-        --x: var(--default-x, 0);
-      }
+    display: flex;
+    justify-content: center;
+    .text {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: auto;
+      margin-bottom: 5px;
     }
     .running {
       --scale: 1;
       --color: powderblue;
       position: absolute;
       top: 30px;
-      right: 110%;
+      right: calc(50%);
       transition: transform 0.4s ease;
-      transform: translateX(var(--running-x, -8px)) scale(var(--scale));
+      transform: translateX(var(--running-x, -80px)) scale(var(--scale));
     }
     &:hover {
       --default-x: 0px;
-      --running-x: 90px;
+      --running-x: 0;
       /* --running-x: var(--padding-x); */
     }
   }
