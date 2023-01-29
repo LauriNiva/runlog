@@ -72,7 +72,8 @@ const InfoButtonStyles = styled.div`
   }
 `;
 
-export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }) {
+
+export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }:any) {
   return (
     <>
       <Head>
@@ -89,7 +90,7 @@ export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }) {
         </InfoButtonStyles>
 
         <CalendarStyles style={{}}>
-          {arrayOfDaysWithRuns?.map(([date, year, run], index) => (
+          {arrayOfDaysWithRuns?.map(([date, year, run]: any, index: any) => (
             <DayStyles
               key={`calendar-${index}`}
               style={{
@@ -151,10 +152,12 @@ export async function getServerSideProps() {
     range,
   });
 
-  // Poistetaan useammat merkinnät samalta päivältä. Reverse, koska data tulee uusin ensin ja tarvitaan vanhin ensin
-  const arrayOfUniqueRuns = [
-    ...new Set(response?.data?.values.reverse().map((arr) => arr[0])),
-  ];
+    // Poistetaan useammat merkinnät samalta päivältä. Reverse, koska data tulee uusin ensin ja tarvitaan vanhin ensin
+    const arrayOfUniqueRuns = [
+      ...Array.from(
+        new Set(response?.data?.values.reverse().map((arr) => arr[0]))
+      ),
+    ];
 
   // Muunnetaan tekstimuotoiset päivämäärät Date objekteiksi
   const arrayOfRunDates = arrayOfUniqueRuns.map((value) => new Date(value));
