@@ -144,9 +144,9 @@ const RunnerStyles = styled.div`
     }
     .running {
       --scale: 1;
-      --color: powderblue;
+      --color: MediumVioletRed;
       position: absolute;
-      top: 30px;
+      top: 30%;
       right: calc(50%);
       transition: transform 0.4s ease;
       transform: translateX(var(--running-x, -80px)) scale(var(--scale));

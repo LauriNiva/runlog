@@ -35,6 +35,7 @@ const DayStyles = styled.div`
     display: block;
   }
   p {
+    z-index: 5;
     display: none;
     user-select: none;
     /* transition: color 0.1s ease-in; */
@@ -47,11 +48,19 @@ const DayStyles = styled.div`
 
 const StatsStyles = styled.div`
   padding: 30px;
+  
   p {
+    padding-bottom: 5px;
+    text-align: center;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
       Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: larger;
     color: aliceblue;
+    a {
+      color: MediumVioletRed;
+      text-decoration: none;
+      font-size: x-large;
+    }
   }
 `;
 
@@ -113,10 +122,15 @@ export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }:any) {
             </DayStyles>
           ))}
         </CalendarStyles>
-        <StatsStyles>
-          <p id="bottomArea">{`${daysRun} / ${totalDays} ( ${Math.floor(
+        <StatsStyles id="bottomArea">
+          <p>Nettisivu näyttää toteutuneet päivittäiset juoksulenkit suoraan Ajuoksukellosta synkronoituna.</p>
+          <p>Päivittäisten aamulenkkien projekti alkanut 16.5.2022.</p>
+          <p>Toteutuneet lenkit: {`${daysRun} / ${totalDays} ( ${Math.floor(
             (daysRun / totalDays) * 100
           )}% )`}</p>
+          <p>
+            <a rel='noreferrer' target={'_blank'} href="https://github.com/LauriNiva/runlog">Sivun GitHub</a>
+          </p>
         </StatsStyles>
       </main>
     </>
