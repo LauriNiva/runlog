@@ -184,7 +184,7 @@ export async function getServerSideProps() {
         
         let runIterator = 0;
         const arrayOfDaysWithRuns = daysArray.map((date) => {
-          if (date.getTime() === arrayOfRunDates[runIterator].getTime()) {
+          if (date.getTime() === arrayOfRunDates[runIterator]?.getTime()) {
             runIterator++;
           }
           return [
