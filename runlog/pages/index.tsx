@@ -10,6 +10,7 @@ const CalendarStyles = styled.div`
   flex-flow: wrap-reverse;
   gap: 2px;
   max-width: 800px;
+  overflow: hidden;
 `;
 
 const DayStyles = styled.div`
@@ -23,6 +24,7 @@ const DayStyles = styled.div`
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background-color: black;
   .emptydiv {
     position: absolute;
     top: 0;
@@ -48,7 +50,8 @@ const DayStyles = styled.div`
 
 const StatsStyles = styled.div`
   padding: 30px;
-  
+  background-color: black;
+  z-index: 5;
   p {
     padding-bottom: 5px;
     text-align: center;
@@ -82,7 +85,8 @@ const InfoButtonStyles = styled.div`
 `;
 
 
-export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }:any) {
+
+export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }: any) {
   return (
     <>
       <Head>
@@ -98,7 +102,7 @@ export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }:any) {
           </a>
         </InfoButtonStyles>
 
-        <CalendarStyles style={{}}>
+        <CalendarStyles>
           {arrayOfDaysWithRuns?.map(([date, year, run]: any, index: any) => (
             <DayStyles
               key={`calendar-${index}`}
@@ -111,19 +115,32 @@ export default function Home({ arrayOfDaysWithRuns, daysRun, totalDays }:any) {
                   <Runner run={run}>
                     <p>{date}</p>
                     <p>{year}</p>
-                  </Runner>}
+                  </Runner>
+                }
               </div>
             </DayStyles>
           ))}
         </CalendarStyles>
         <StatsStyles id="bottomArea">
-          <p>Nettisivu näyttää toteutuneet päivittäiset juoksulenkit suoraan juoksukellosta synkronoituna.</p>
-          <p>Päivittäisten aamulenkkien projekti alkanut 16.5.2022.</p>
-          <p>Toteutuneet lenkit: {`${daysRun} / ${totalDays} ( ${Math.floor(
-            (daysRun / totalDays) * 100
-          )}% )`}</p>
           <p>
-            <a rel='noreferrer' target={'_blank'} href="https://github.com/LauriNiva/runlog">Sivun GitHub</a>
+            Nettisivu näyttää toteutuneet päivittäiset juoksulenkit suoraan
+            juoksukellosta synkronoituna.
+          </p>
+          <p>Päivittäisten aamulenkkien projekti alkanut 16.5.2022.</p>
+          <p>
+            Toteutuneet lenkit:{' '}
+            {`${daysRun} / ${totalDays} ( ${Math.floor(
+              (daysRun / totalDays) * 100
+            )}% )`}
+          </p>
+          <p>
+            <a
+              rel="noreferrer"
+              target={'_blank'}
+              href="https://github.com/LauriNiva/runlog"
+            >
+              Sivun GitHub
+            </a>
           </p>
         </StatsStyles>
       </main>
@@ -147,7 +164,6 @@ export async function getServerSideProps() {
 
   const daysArray = getDaysArray();
 
-
   const { private_key } = JSON.parse(process.env.GOOGLE_PRIVATE_KEY!);
 
   const auth = await google.auth.getClient({
@@ -158,7 +174,6 @@ export async function getServerSideProps() {
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
   });
 
-
   const sheets = google.sheets({ version: 'v4', auth });
 
   const range = `Running!A2:A${daysArray.length}`;
@@ -168,35 +183,34 @@ export async function getServerSideProps() {
     range,
   });
 
-    // Poistetaan useammat merkinnät samalta päivältä. Reverse, koska data tulee uusin ensin ja tarvitaan vanhin ensin
-    if (response?.data?.values){
+  // Poistetaan useammat merkinnät samalta päivältä. Reverse, koska data tulee uusin ensin ja tarvitaan vanhin ensin
+  if (response?.data?.values) {
+    const arrayOfUniqueRuns = [
+      ...Array.from(
+        new Set(response?.data?.values.reverse().map((arr) => arr[0]))
+      ),
+    ];
 
-      const arrayOfUniqueRuns = [
-        ...Array.from(
-          new Set(response?.data?.values.reverse().map((arr) => arr[0]))
-          ),
-        ];
-        
-        // Muunnetaan tekstimuotoiset päivämäärät Date objekteiksi
-        const arrayOfRunDates = arrayOfUniqueRuns.map((value) => new Date(value));
-        
-        console.log(`${arrayOfRunDates.length} / ${daysArray.length}`);
-        
-        let runIterator = 0;
-        const arrayOfDaysWithRuns = daysArray.map((date) => {
-          if (date.getTime() === arrayOfRunDates[runIterator]?.getTime()) {
-            runIterator++;
-          }
-          return [
-            date.toLocaleDateString('fi-FI', { day: '2-digit', month: '2-digit' }),
-            date.toLocaleDateString('fi-FI', { year: 'numeric' }),
-            date.getTime() === arrayOfRunDates[runIterator - 1].getTime(),
-          ];
-        });
-        
-        const totalDays = arrayOfDaysWithRuns.length;
-        const daysRun = arrayOfRunDates.length;
-        return { props: { arrayOfDaysWithRuns, totalDays, daysRun } };
+    // Muunnetaan tekstimuotoiset päivämäärät Date objekteiksi
+    const arrayOfRunDates = arrayOfUniqueRuns.map((value) => new Date(value));
+
+    console.log(`${arrayOfRunDates.length} / ${daysArray.length}`);
+
+    let runIterator = 0;
+    const arrayOfDaysWithRuns = daysArray.map((date) => {
+      if (date.getTime() === arrayOfRunDates[runIterator]?.getTime()) {
+        runIterator++;
       }
-      return { props: { arrayOfDaysWithRuns : 0, totalDays : 0, daysRun : 0} };
+      return [
+        date.toLocaleDateString('fi-FI', { day: '2-digit', month: '2-digit' }),
+        date.toLocaleDateString('fi-FI', { year: 'numeric' }),
+        date.getTime() === arrayOfRunDates[runIterator - 1].getTime(),
+      ];
+    });
+
+    const totalDays = arrayOfDaysWithRuns.length;
+    const daysRun = arrayOfRunDates.length;
+    return { props: { arrayOfDaysWithRuns, totalDays, daysRun } };
+  }
+  return { props: { arrayOfDaysWithRuns: 0, totalDays: 0, daysRun: 0 } };
 }
