@@ -194,6 +194,9 @@ export async function getServerSideProps() {
     // Muunnetaan tekstimuotoiset päivämäärät Date objekteiksi
     const arrayOfRunDates = arrayOfUniqueRuns.map((value) => new Date(value));
 
+
+    arrayOfRunDates.sort((a, b) => a.getTime() - b.getTime());
+ 
     console.log(`${arrayOfRunDates.length} / ${daysArray.length}`);
 
     let runIterator = 0;
@@ -204,7 +207,7 @@ export async function getServerSideProps() {
       return [
         date.toLocaleDateString('fi-FI', { day: '2-digit', month: '2-digit' }),
         date.toLocaleDateString('fi-FI', { year: 'numeric' }),
-        date.getTime() === arrayOfRunDates[runIterator - 1].getTime(),
+        date.getTime() === arrayOfRunDates[runIterator - 1]?.getTime(),
       ];
     });
 
